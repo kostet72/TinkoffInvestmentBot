@@ -1,0 +1,11 @@
+server:
+  port: "port"
+
+bot:
+  name: "telegram bot name"
+  token: "telegram bot token"
+
+tinkoff:
+  starter:
+    apiToken:
+      fullAccess: "Tinkoff API token"
