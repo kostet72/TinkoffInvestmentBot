@@ -21,7 +21,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: '3.2.0'
 
-	// TINKOFF
+	// TINKOFF API
 	implementation 'io.github.dankosik:invest-api-java-sdk-starter:1.6.0-RC1'
 
 	// TELEGRAM
@@ -31,10 +31,9 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	compileOnly 'org.projectlombok:lombok'
 
-	// TESTS
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-}
-
-tasks.named('test') {
-	useJUnitPlatform()
+	// DATABASE
+	implementation 'org.springframework.boot:spring-boot-starter-data-r2dbc'
+	implementation group: 'org.flywaydb', name: 'flyway-core', version: '9.0.0'
+	runtimeOnly 'org.postgresql:postgresql:42.6.0'
+	runtimeOnly 'org.postgresql:r2dbc-postgresql:1.0.2.RELEASE'
 }
