@@ -1,6 +1,6 @@
 package tinkoff.investment.bot.tinkoffInvestmentBot.config;
 
-import tinkoff.investment.bot.tinkoffInvestmentBot.service.BotService;
+import tinkoff.investment.bot.tinkoffInvestmentBot.service.bot.BotService;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
