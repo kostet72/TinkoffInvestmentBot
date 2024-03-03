@@ -32,6 +32,9 @@ spring:
     ansi:
       enabled: ALWAYS
 
+file:
+  path: "src/main/resources/file/figi_ticker.txt"
+
 bot:
   name: "telegram bot name"
   token: "telegram bot token"

@@ -4,6 +4,6 @@ CREATE TABLE users (
 );
 
 CREATE TABLE stock (
-    ticker TEXT,
+    ticker TEXT UNIQUE,
     price TEXT
 );

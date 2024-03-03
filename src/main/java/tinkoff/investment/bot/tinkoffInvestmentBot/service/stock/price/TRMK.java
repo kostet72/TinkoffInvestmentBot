@@ -6,8 +6,8 @@ import io.github.dankosik.starter.invest.annotation.marketdata.HandleLastPrice;
 import ru.tinkoff.piapi.contract.v1.LastPrice;
 import io.github.dankosik.starter.invest.contract.marketdata.lastprice.BlockingLastPriceHandler;
 
-@HandleLastPrice(ticker = "LKOH")
-class LKOH implements BlockingLastPriceHandler {
+@HandleLastPrice(ticker = "TRMK")
+class TRMK implements BlockingLastPriceHandler {
 
     @Override
     public void handleBlocking(@NotNull LastPrice lastPrice) {}
