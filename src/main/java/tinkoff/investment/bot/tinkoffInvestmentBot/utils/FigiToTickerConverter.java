@@ -1,4 +1,4 @@
-package tinkoff.investment.bot.tinkoffInvestmentBot.service.stock;
+package tinkoff.investment.bot.tinkoffInvestmentBot.utils;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,6 +1,7 @@
 package tinkoff.investment.bot.tinkoffInvestmentBot.service.bot;
 
 import tinkoff.investment.bot.tinkoffInvestmentBot.model.entity.User;
+import tinkoff.investment.bot.tinkoffInvestmentBot.service.stock.StockManager;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,8 @@ import static org.springframework.data.relational.core.query.Criteria.where;
 @Component
 @RequiredArgsConstructor
 public class BotService extends TelegramLongPollingBot {
+
+    private final StockManager stockManager;
 
     private final R2dbcEntityTemplate template;
 
@@ -52,15 +55,26 @@ public class BotService extends TelegramLongPollingBot {
             String userTag = update.getMessage().getFrom().getUserName();
             long chatId = update.getMessage().getChatId();
 
-            switch (messageText) {
+            if (messageText.startsWith("/price")) {
 
-                case "/start":
-                    startCommand(chatId, update.getMessage().getChat().getFirstName(), userTag);
-                    break;
+                String ticker = messageText.substring(7);
+                getLastPriceCommand(chatId, ticker);
+            }
+            else {
+                switch (messageText) {
 
-                case "/help":
-                    helpCommand(chatId);
-                    break;
+                    case "/start":
+                        startCommand(chatId, update.getMessage().getChat().getFirstName(), userTag);
+                        break;
+
+                    case "/help":
+                        helpCommand(chatId);
+                        break;
+
+                    default:
+                        sendMessage(chatId, "Я не понимаю вас. Обратитесь к команде /help, чтобы узнать о доступных командах");
+                        break;
+                }
             }
         }
     }
@@ -114,7 +128,18 @@ public class BotService extends TelegramLongPollingBot {
 
     public void helpCommand(long chatId) {
 
-        String answer = "help";
+        String answer = """
+                Доступные на данный момент команды:
+
+                /price {}   -   получить текущую цену акции.
+                Пример использования:   "/price LKOH"
+                """;
+        sendMessage(chatId, answer);
+    }
+
+    public void getLastPriceCommand(long chatId, String ticker) {
+
+        String answer = stockManager.getStockPrice(ticker).block();
         sendMessage(chatId, answer);
     }
 }
