@@ -1,7 +1,7 @@
 package tinkoff.investment.bot.tinkoffInvestmentBot.service.bot;
 
 import tinkoff.investment.bot.tinkoffInvestmentBot.model.entity.User;
-import tinkoff.investment.bot.tinkoffInvestmentBot.service.stock.StockManager;
+import tinkoff.investment.bot.tinkoffInvestmentBot.service.stock.StockService;
 
 import lombok.extern.slf4j.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import static org.springframework.data.relational.core.query.Criteria.where;
 @RequiredArgsConstructor
 public class BotService extends TelegramLongPollingBot {
 
-    private final StockManager stockManager;
+    private final StockService stockService;
 
     private final R2dbcEntityTemplate template;
 
@@ -139,7 +139,7 @@ public class BotService extends TelegramLongPollingBot {
 
     public void getLastPriceCommand(long chatId, String ticker) {
 
-        String answer = stockManager.getStockPrice(ticker).block();
+        String answer = stockService.getStockPrice(ticker).block();
         sendMessage(chatId, answer);
     }
 }
