@@ -33,7 +33,7 @@ spring:
       enabled: ALWAYS
 
 file:
-  path: "src/main/resources/file/figi_ticker.txt"
+  path: "src/main/resources/file/StockList.txt"
 
 bot:
   name: "telegram bot name"

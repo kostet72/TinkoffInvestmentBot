@@ -1,6 +1,6 @@
 package tinkoff.investment.bot.tinkoffInvestmentBot.service.stock.handler.price;
 
-import tinkoff.investment.bot.tinkoffInvestmentBot.utils.FigiToTickerConverter;
+import tinkoff.investment.bot.tinkoffInvestmentBot.utils.SearchInStockList;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 public class LastPriceHandler implements AsyncLastPriceHandler {
 
-    private final FigiToTickerConverter converter;
+    private final SearchInStockList search;
 
     private final R2dbcEntityTemplate template;
 
@@ -29,7 +29,7 @@ public class LastPriceHandler implements AsyncLastPriceHandler {
     public CompletableFuture<Void> handleAsync(@NotNull LastPrice lastPrice) {
 
         String figi = lastPrice.getFigi();
-        String ticker = converter.findTickerByFigi(figi);
+        String ticker = search.getTickerByFigi(figi);
 
         String rubles = String.valueOf(lastPrice.getPrice().getUnits());
         String kopecks = String.valueOf(lastPrice.getPrice().getNano()).replaceAll("0*$", "");

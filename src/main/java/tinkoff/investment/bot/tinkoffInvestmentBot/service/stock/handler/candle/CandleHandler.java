@@ -2,7 +2,7 @@ package tinkoff.investment.bot.tinkoffInvestmentBot.service.stock.handler.candle
 
 import tinkoff.investment.bot.tinkoffInvestmentBot.model.dto.CandleDTO;
 import tinkoff.investment.bot.tinkoffInvestmentBot.model.enums.CandleType;
-import tinkoff.investment.bot.tinkoffInvestmentBot.utils.FigiToTickerConverter;
+import tinkoff.investment.bot.tinkoffInvestmentBot.utils.SearchInStockList;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 class CandleHandler implements AsyncCandleHandler {
 
-    private final FigiToTickerConverter converter;
+    private final SearchInStockList search;
 
     @NotNull
     @Override
@@ -31,7 +31,7 @@ class CandleHandler implements AsyncCandleHandler {
         CandleDTO candleDTO;
 
         String figi = candle.getFigi();
-        String ticker = converter.findTickerByFigi(figi);
+        String ticker = search.getTickerByFigi(figi);
 
         Double openRubles = (double) candle.getOpen().getUnits();
         Double openKopecks = (double) candle.getOpen().getNano() / 1000000000;

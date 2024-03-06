@@ -1,0 +1,8 @@
+BBG000W325F7: AQUA: Инарктики
+BBG00ZHCX1X2: FIXP: Фикспрайса
+BBG004731032: LKOH: Лукойла
+BBG004PYF2N3: POLY: Полиметалла
+BBG004731354: ROSN: Роснефти
+TCS00A0ZZBC2: SOFL: Софтлайна
+TCS00A0ZZAC4: SVCB: Совкомбанка
+BBG004TC84Z8: TRMK: Трубной Металлургической компании
