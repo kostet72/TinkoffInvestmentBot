@@ -2,6 +2,7 @@ package tinkoff.investment.bot.tinkoffInvestmentBot.service.stock.handler.candle
 
 import tinkoff.investment.bot.tinkoffInvestmentBot.model.dto.CandleDTO;
 import tinkoff.investment.bot.tinkoffInvestmentBot.model.enums.CandleType;
+import tinkoff.investment.bot.tinkoffInvestmentBot.service.bot.BotService;
 import tinkoff.investment.bot.tinkoffInvestmentBot.utils.SearchInStockList;
 
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,12 @@ import java.util.concurrent.CompletableFuture;
 @HandleAllCandles
 (
     tickers = {"ROSN"},
-    subscriptionInterval = SubscriptionInterval.SUBSCRIPTION_INTERVAL_FIVE_MINUTES
+    subscriptionInterval = SubscriptionInterval.SUBSCRIPTION_INTERVAL_FIFTEEN_MINUTES
 )
 @RequiredArgsConstructor
 class CandleHandler implements AsyncCandleHandler {
+
+    private final BotService bot;
 
     private final SearchInStockList search;
 
@@ -28,10 +31,9 @@ class CandleHandler implements AsyncCandleHandler {
     @Override
     public CompletableFuture<Void> handleAsync(@NotNull Candle candle) {
 
-        CandleDTO candleDTO;
-
         String figi = candle.getFigi();
         String ticker = search.getTickerByFigi(figi);
+        String nameOfTheCompany = search.getNameByTicker(ticker);
 
         Double openRubles = (double) candle.getOpen().getUnits();
         Double openKopecks = (double) candle.getOpen().getNano() / 1000000000;
@@ -49,37 +51,62 @@ class CandleHandler implements AsyncCandleHandler {
         Double lowShadowKopecks = (double) candle.getLow().getNano() / 1000000000;
         Double lowShadow = lowShadowRubles + lowShadowKopecks;
 
-//        System.out.println("OPEN PRICE: " + openPrice + "\n" + "CLOSE PRICE: " + closePrice + "\n" +
-//                "HIGH SHADOW: " + highShadow + "\n" + "LOW SHADOW: " + lowShadow);
+        Double percentChange = Math.abs((openPrice - closePrice) / openPrice * 100);
 
-        if (openPrice < closePrice) {
-
-            candleDTO = CandleDTO.builder()
-                    .ticker(ticker)
-                    .openPrice(openPrice)
-                    .closePrice(closePrice)
-                    .highShadow(highShadow)
-                    .lowShadow(lowShadow)
-                    .candleType(CandleType.BULL_CANDLE)
-                    .build();
-        }
-        else if (openPrice > closePrice) {
-
-            candleDTO = CandleDTO.builder()
-                    .ticker(ticker)
-                    .openPrice(openPrice)
-                    .closePrice(closePrice)
-                    .highShadow(highShadow)
-                    .lowShadow(lowShadow)
-                    .candleType(CandleType.BEAR_CANDLE)
-                    .build();
-        }
-        else {
-            candleDTO = null;
-        }
+        CandleDTO candleDTO = CandleDTO.builder()
+                .nameOfTheCompany(nameOfTheCompany)
+                .openPrice(openPrice)
+                .closePrice(closePrice)
+                .highShadow(highShadow)
+                .lowShadow(lowShadow)
+                .percentChange(percentChange)
+                .build();
 
         return CompletableFuture.runAsync(() -> candleAnalysis(candleDTO));
     }
 
-    public void candleAnalysis(CandleDTO candleDTO) {}
+    public void candleAnalysis(CandleDTO candleDTO) {
+
+        String nameOfTheCompany = candleDTO.getNameOfTheCompany();
+        Double openPrice = candleDTO.getOpenPrice();
+        Double closePrice = candleDTO.getClosePrice();
+        Double highShadow = candleDTO.getHighShadow();
+        Double lowShadow = candleDTO.getLowShadow();
+        Double percentChange = candleDTO.getPercentChange();
+
+        if (openPrice < closePrice && percentChange >= 1) {
+
+            Double highToClose = Math.abs((highShadow - closePrice) / highShadow * 100);
+            Double lowToOpen = Math.abs((openPrice - lowShadow) / openPrice * 100);
+
+            if (highToClose < 0.1 && lowToOpen < 0.1) {
+
+                candleDTO = CandleDTO.builder()
+                        .nameOfTheCompany(nameOfTheCompany)
+                        .percentChange(percentChange)
+                        .candleType(CandleType.MARIBOZU_BULL)
+                        .build();
+                notifyAboutPriceChange(candleDTO);
+            }
+//            else if () {}
+        }
+        else if (openPrice > closePrice && percentChange >= 1) {
+
+            Double highToOpen = Math.abs((highShadow - openPrice) / highShadow * 100);
+            Double lowToClose = Math.abs((closePrice - lowShadow) / closePrice * 100);
+
+            if (highToOpen < 0.1 && lowToClose < 0.1) {
+
+                candleDTO = CandleDTO.builder()
+                        .nameOfTheCompany(nameOfTheCompany)
+                        .percentChange(percentChange)
+                        .candleType(CandleType.MARIBOZU_BEAR)
+                        .build();
+                notifyAboutPriceChange(candleDTO);
+            }
+//            else if () {}
+        }
+    }
+
+    public void notifyAboutPriceChange(CandleDTO candleDTO) {}
 }

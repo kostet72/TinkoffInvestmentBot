@@ -27,9 +27,9 @@ import static org.springframework.data.relational.core.query.Criteria.where;
 @RequiredArgsConstructor
 public class BotService extends TelegramLongPollingBot {
 
-    private final StockService stockService;
-
     private final SearchInStockList search;
+
+    private final StockService stockService;
 
     private final R2dbcEntityTemplate template;
 
