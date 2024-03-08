@@ -1,6 +1,7 @@
 CREATE TABLE users (
     tag TEXT UNIQUE,
-    chat_id TEXT
+    chat_id BIGINT,
+    is_subscribed BOOLEAN DEFAULT false::BOOLEAN
 );
 
 CREATE TABLE stock (

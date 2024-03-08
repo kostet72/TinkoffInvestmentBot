@@ -1,5 +1,6 @@
 package tinkoff.investment.bot.tinkoffInvestmentBot.service.stock.handler.candle;
 
+import tinkoff.investment.bot.tinkoffInvestmentBot.utils.UserInfo;
 import tinkoff.investment.bot.tinkoffInvestmentBot.model.dto.CandleDTO;
 import tinkoff.investment.bot.tinkoffInvestmentBot.model.enums.CandleType;
 import tinkoff.investment.bot.tinkoffInvestmentBot.service.bot.BotService;
@@ -9,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import io.github.dankosik.starter.invest.annotation.marketdata.HandleAllCandles;
 
+import reactor.core.publisher.Mono;
 import ru.tinkoff.piapi.contract.v1.Candle;
 import ru.tinkoff.piapi.contract.v1.SubscriptionInterval;
 import io.github.dankosik.starter.invest.contract.marketdata.candle.AsyncCandleHandler;
@@ -26,6 +28,8 @@ class CandleHandler implements AsyncCandleHandler {
     private final BotService bot;
 
     private final SearchInStockList search;
+
+    private final UserInfo userInfo;
 
     @NotNull
     @Override
@@ -108,5 +112,25 @@ class CandleHandler implements AsyncCandleHandler {
         }
     }
 
-    public void notifyAboutPriceChange(CandleDTO candleDTO) {}
+    public void notifyAboutPriceChange(CandleDTO candleDTO) {
+
+        switch (candleDTO.getCandleType()) {
+
+            case MARIBOZU_BULL -> sendNotification("Сильное изменение котировок \"" + candleDTO.getNameOfTheCompany() + "\". " +
+                    "Рост на " + candleDTO.getPercentChange() + "процента!");
+
+            case MARIBOZU_BEAR -> sendNotification("Сильное изменение котировок \"" + candleDTO.getNameOfTheCompany() + "\". " +
+                    "Падение на " + candleDTO.getPercentChange() + "процента!");
+        }
+    }
+
+    private void sendNotification(String answer) {
+
+        userInfo.getChatIdFromUsers()
+                .flatMap(chatId -> {
+
+                    bot.sendMessage(chatId, answer);
+                    return Mono.empty();
+                });
+    }
 }

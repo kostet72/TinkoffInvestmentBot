@@ -74,6 +74,12 @@ public class BotService extends TelegramLongPollingBot {
                         helpCommand(chatId);
                         break;
 
+                    case "/notify_on":
+                        turnNotificationsOnCommand(userTag);
+
+                    case "/notify_off":
+                        turnNotificationsOffCommand(userTag);
+
                     default:
                         sendMessage(chatId, "Я не понимаю вас. Обратитесь к команде /help, чтобы узнать о доступных командах");
                         break;
@@ -121,7 +127,7 @@ public class BotService extends TelegramLongPollingBot {
 
                         User user = User.builder()
                                 .tag(userTag)
-                                .chatId(String.valueOf(chatId))
+                                .chatId(chatId)
                                 .build();
 
                         return template.insert(user);
@@ -136,8 +142,24 @@ public class BotService extends TelegramLongPollingBot {
 
                 /price {}   -   получить текущую цену акции.
                 Пример использования:   "/price LKOH"
+                
+                /notify_on и /notify_off   -   включить/отключить уведомления о резком росте/падении акции,а также потенциальных точках для входа в позицию
                 """;
         sendMessage(chatId, answer);
+    }
+
+    public void turnNotificationsOnCommand(String tag) {
+
+        template.update(query(where("tag").is(tag)),
+                update("is_subscribed", true),
+                User.class);
+    }
+
+    public void turnNotificationsOffCommand(String tag) {
+
+        template.update(query(where("tag").is(tag)),
+                update("is_subscribed", false),
+                User.class);
     }
 
     public void getLastPriceCommand(long chatId, String ticker) {

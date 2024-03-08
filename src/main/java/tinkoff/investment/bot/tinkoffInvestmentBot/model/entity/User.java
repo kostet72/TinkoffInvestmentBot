@@ -12,5 +12,5 @@ import org.springframework.data.relational.core.mapping.Table;
 public class User {
 
     private String tag;
-    private String chatId;
+    private Long chatId;
 }
